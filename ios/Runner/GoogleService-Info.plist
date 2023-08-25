@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>118619779040-mkagvm4jefjd698ga1mc9usaseqrc67m.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.118619779040-mkagvm4jefjd698ga1mc9usaseqrc67m</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCsrW0fhyvfpaU6_pWJTqYspRgogI8YyBM</string>
+	<key>GCM_SENDER_ID</key>
+	<string>118619779040</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.sogeum.bokdaeriHybrid</string>
+	<key>PROJECT_ID</key>
+	<string>bokdaeri-a3f62</string>
+	<key>STORAGE_BUCKET</key>
+	<string>bokdaeri-a3f62.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:118619779040:ios:4556c48663640f9b318585</string>
+	<key>DATABASE_URL</key>
+	<string>https://bokdaeri-a3f62.firebaseio.com</string>
+</dict>
+</plist>
