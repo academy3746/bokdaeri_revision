@@ -118,40 +118,8 @@ class _WebviewControllerState extends State<WebviewController> {
     final directory = await getExternalStorageDirectory();
     final filePath = '${directory?.path}/$url.pdf';
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('파일 다운로드 진행중...'),
-        duration: Duration(seconds: 1),
-      ),
-    );
-
-    bool isComplete = false;
-    await dio.download(
-      url,
-      filePath,
-      onReceiveProgress: (int received, int total) {
-        if (received == total) {
-          isComplete = true;
-        }
-      },
-    );
-
-    if (isComplete) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('파일 다운로드 완료'),
-          duration: Duration(seconds: 3),
-        ),
-      );
-      OpenFile.open(filePath);
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('파일 다운로드 실패'),
-          duration: Duration(seconds: 3),
-        ),
-      );
-    }
+    await dio.download(url, filePath);
+    OpenFile.open(filePath);
   }
 
   @override
