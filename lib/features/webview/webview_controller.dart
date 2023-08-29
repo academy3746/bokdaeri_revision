@@ -119,6 +119,7 @@ class _WebviewControllerState extends State<WebviewController> {
     final filePath = '${directory?.path}/$url.pdf';
 
     await dio.download(url, filePath);
+
     OpenFile.open(filePath);
   }
 
