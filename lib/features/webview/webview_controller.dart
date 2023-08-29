@@ -3,12 +3,15 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_webview_pro/webview_flutter.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:open_file/open_file.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -51,7 +54,7 @@ class _WebviewControllerState extends State<WebviewController> {
       PermissionStatus result =
       await Permission.manageExternalStorage.request();
       if (!result.isGranted) {
-        print('Permission denied by user');
+        print('Permission denied by user.');
       } else {
         print('Permission has submitted.');
       }
@@ -83,6 +86,7 @@ class _WebviewControllerState extends State<WebviewController> {
     return prefs.getString('cookies');
   }
 
+  // GET Firebase Token Value
   JavascriptChannel _flutterWebviewProJavascriptChannel(BuildContext context) {
     return JavascriptChannel(
       name: 'flutter_webview_pro',
@@ -108,6 +112,47 @@ class _WebviewControllerState extends State<WebviewController> {
     return await _msgController.getToken();
   }
 
+  // 다운로드 처리 in App
+  Future<void> downloadFile(String url) async {
+    final dio = Dio();
+    final directory = await getExternalStorageDirectory();
+    final filePath = '${directory?.path}/$url.pdf';
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('파일 다운로드 진행중...'),
+        duration: Duration(seconds: 1),
+      ),
+    );
+
+    bool isComplete = false;
+    await dio.download(
+      url,
+      filePath,
+      onReceiveProgress: (int received, int total) {
+        if (received == total) {
+          isComplete = true;
+        }
+      },
+    );
+
+    if (isComplete) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('파일 다운로드 완료'),
+          duration: Duration(seconds: 3),
+        ),
+      );
+      OpenFile.open(filePath);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('파일 다운로드 실패'),
+          duration: Duration(seconds: 3),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -202,6 +247,7 @@ class _WebviewControllerState extends State<WebviewController> {
                   onPageFinished: (String url) async {
 
                     if (url.contains(url) && _viewController != null) {
+                      /// Android Soft Keyboard 가림 현상 조치
                       await _viewController!.runJavascript("""
                         (function() {
                           function scrollToFocusedInput(event) {
@@ -218,6 +264,7 @@ class _WebviewControllerState extends State<WebviewController> {
                       """);
                     }
 
+                    /// Cookie Settings
                     if (url.contains(
                         "${url}login.php") &&
                         _viewController != null) {
@@ -230,6 +277,14 @@ class _WebviewControllerState extends State<WebviewController> {
                         await _setCookies(_viewController!, cookies);
                       }
                     }
+                  },
+                  navigationDelegate: (NavigationRequest request) async {
+                    if (request.url.contains('/sub/warrant_pdf.php')) {
+                      await downloadFile(request.url);
+                      return NavigationDecision.prevent;
+                    }
+
+                    return NavigationDecision.navigate;
                   },
                   geolocationEnabled: true,
                   zoomEnabled: false,
