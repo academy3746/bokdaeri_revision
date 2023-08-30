@@ -123,6 +123,51 @@ class _WebviewControllerState extends State<WebviewController> {
     OpenFile.open(filePath);
   }
 
+  // 뒤로가기 Anction
+  Future<bool> _onWillPop() async {
+      if (_viewController == null) {
+        return false;
+      }
+
+      final currentUrl = await _viewController?.currentUrl();
+
+      if (currentUrl == url) {
+        if (!mounted) return false;
+        return showDialog<bool>(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text("앱을 종료하시겠습니까?"),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(true);
+                    print("앱이 포그라운드에서 종료되었습니다.");
+                  },
+                  child: const Text("확인"),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(false);
+                    print("앱이 종료되지 않았습니다.");
+                  },
+                  child: const Text("취소"),
+                ),
+              ],
+            );
+          },
+        ).then((value) => value ?? false);
+      } else if (await _viewController!.canGoBack() &&
+          _viewController != null) {
+        _viewController!.goBack();
+        print("이전 페이지로 이동하였습니다.");
+
+        isInMainPage = false;
+        return false;
+      }
+      return false;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -134,54 +179,7 @@ class _WebviewControllerState extends State<WebviewController> {
             height: constraints.maxHeight,
             width: constraints.maxWidth,
             child: WillPopScope(
-              onWillPop: () async {
-                if (_viewController == null) {
-                  return false;
-                }
-
-                final currentUrl = await _viewController?.currentUrl();
-
-                if (currentUrl == url) {
-                  if (!mounted) return false;
-                  return showDialog<bool>(
-                    context: context,
-                    builder: (context) {
-                      return AlertDialog(
-                        title: const Text("앱을 종료하시겠습니까?"),
-                        actions: <Widget>[
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pop(true);
-                              if (kDebugMode) {
-                                print("앱이 포그라운드에서 종료되었습니다.");
-                              }
-                            },
-                            child: const Text("확인"),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pop(false);
-                              if (kDebugMode) {
-                                print("앱이 종료되지 않았습니다.");
-                              }
-                            },
-                            child: const Text("취소"),
-                          ),
-                        ],
-                      );
-                    },
-                  ).then((value) => value ?? false);
-                } else if (await _viewController!.canGoBack() &&
-                    _viewController != null) {
-                  _viewController!.goBack();
-                  if (kDebugMode) {
-                    print("이전 페이지로 이동하였습니다.");
-                  }
-                  isInMainPage = false;
-                  return false;
-                }
-                return false;
-              },
+              onWillPop: _onWillPop,
               child: SafeArea(
                 child: WebView(
                   initialUrl: url,
