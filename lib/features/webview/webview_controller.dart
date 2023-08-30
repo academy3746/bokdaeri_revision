@@ -25,15 +25,15 @@ class WebviewController extends StatefulWidget {
 }
 
 class _WebviewControllerState extends State<WebviewController> {
-  // URL 초기화
+  /// URL 초기화
   final String url = "https://bokdaeri.com/";
 
   final MsgController _msgController = Get.put(MsgController());
 
-  // 인덱스 페이지 초기화
+  /// 인덱스 페이지 초기화
   bool isInMainPage = true;
 
-  // 웹뷰 컨트롤러 초기화
+  /// 웹뷰 컨트롤러 초기화
   final Completer<WebViewController> _controller =
   Completer<WebViewController>();
 
@@ -47,7 +47,7 @@ class _WebviewControllerState extends State<WebviewController> {
     _requestStoragePermission();
   }
 
-  // 저장매체 접근 권한 요청
+  /// 저장매체 접근 권한 요청
   void _requestStoragePermission() async {
     PermissionStatus status = await Permission.manageExternalStorage.status;
     if (!status.isGranted) {
@@ -61,32 +61,32 @@ class _WebviewControllerState extends State<WebviewController> {
     }
   }
 
-  // 쿠키 획득
+  /// 쿠키 획득
   Future<String> _getCookies(WebViewController controller) async {
     final String cookies =
     await controller.runJavascriptReturningResult('document.cookie;');
     return cookies;
   }
 
-  // 쿠키 설정
+  /// 쿠키 설정
   Future<void> _setCookies(WebViewController controller, String cookies) async {
     await controller
         .runJavascriptReturningResult('document.cookie="$cookies";');
   }
 
-  // 쿠키 저장
+  /// 쿠키 저장
   Future<void> _saveCookies(String cookies) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('cookies', cookies);
   }
 
-  // 쿠키 로드
+  /// 쿠키 로드
   Future<String?> _loadCookies() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString('cookies');
   }
 
-  // GET Firebase Token Value
+  /// GET Firebase Token Value
   JavascriptChannel _flutterWebviewProJavascriptChannel(BuildContext context) {
     return JavascriptChannel(
       name: 'flutter_webview_pro',
@@ -112,7 +112,7 @@ class _WebviewControllerState extends State<WebviewController> {
     return await _msgController.getToken();
   }
 
-  // 다운로드 처리 in App
+  /// 다운로드 처리 in App
   Future<void> downloadFile(String url) async {
     final dio = Dio();
     final directory = await getExternalStorageDirectory();
@@ -123,7 +123,7 @@ class _WebviewControllerState extends State<WebviewController> {
     OpenFile.open(filePath);
   }
 
-  // 뒤로가기 Anction
+  /// 뒤로가기 Anction
   Future<bool> _onWillPop() async {
       if (_viewController == null) {
         return false;
