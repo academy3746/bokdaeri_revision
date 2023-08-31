@@ -1,4 +1,4 @@
-1. [/Users/gimdaehyeon/IdeaProjects/bokdaeri_hybrid.source.20230607] 파일의 백업본입니다.
+1. [/Users/gimdaehyeon/IdeaProjects/bokdaeri_hybrid.source.20230831] 파일의 백업본입니다.
 
 2. Keystore 파일 자체는 원본 파일 경로에 위치합니다.
 

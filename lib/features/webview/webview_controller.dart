@@ -216,19 +216,6 @@ class _WebviewControllerState extends State<WebviewController> {
         },
       );
     }
-
-    /*if (version != marketVersion) {
-    final Uri marketUri = Uri.parse("market://details?id=kr.co.lawired.bok");
-    final Uri fallbackUri = Uri.parse("https://play.google.com/store/apps/details?id=kr.co.lawired.bok");
-
-    if (await canLaunchUrl(marketUri)) {
-      await launchUrl(marketUri);
-    } else if (await canLaunchUrl(fallbackUri)) {
-      await launchUrl(fallbackUri);
-    } else {
-      throw "Can not launch $marketUri";
-    }
-  }*/
   }
 
   @override
