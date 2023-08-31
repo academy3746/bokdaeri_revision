@@ -1,6 +1,5 @@
 // ignore_for_file: avoid_print
 import 'dart:async';
-
 import 'package:bokdaeri_hybrid/features/webview/webview_controller.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -36,7 +35,6 @@ void _getAndroidAppVersion() async {
   }
 }
 
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -56,10 +54,9 @@ void main() async {
     ),
   );
 
-  _getAndroidAppVersion();
   runApp(const BokdaeriApp());
+  _getAndroidAppVersion();
 }
-
 
 class BokdaeriApp extends StatelessWidget {
   const BokdaeriApp({Key? key}) : super(key: key);
