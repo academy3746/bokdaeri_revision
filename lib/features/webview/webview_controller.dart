@@ -11,9 +11,11 @@ import 'package:flutter_webview_pro/webview_flutter.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:open_file/open_file.dart';
+import 'package:package_info/package_info.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../firebase/msg_controller.dart';
 
@@ -45,6 +47,7 @@ class _WebviewControllerState extends State<WebviewController> {
 
     if (Platform.isAndroid) WebView.platform = AndroidWebView();
     _requestStoragePermission();
+    _getAndroidAppVersion(context);
   }
 
   /// 저장매체 접근 권한 요청
@@ -165,6 +168,67 @@ class _WebviewControllerState extends State<WebviewController> {
       return false;
     }
     return false;
+  }
+
+  /// Google Play Store Direction
+  void _getAndroidAppVersion(BuildContext context) async {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    String version = packageInfo.version;
+
+    print("User Device App Version: $version");
+
+    /// Google Play Store Info (Hard Code)
+    const String marketVersion = "2.0.0";
+
+    /// Google Play Store Direction
+    if (version != marketVersion) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text("업데이트 안내"),
+            content: const Text("앱이 최신 상태가 아닙니다.\n업데이트를 위해 마켓으로 이동하시겠습니까?"),
+            actions: [
+              TextButton(
+                onPressed: () async {
+                  final Uri marketUri = Uri.parse("market://details?id=kr.co.lawired.bok");
+                  final Uri fallbackUri = Uri.parse("https://play.google.com/store/apps/details?id=kr.co.lawired.bok");
+
+                  if (await canLaunchUrl(marketUri)) {
+                    await launchUrl(marketUri);
+                  } else if (await canLaunchUrl(fallbackUri)) {
+                    await launchUrl(fallbackUri);
+                  } else {
+                    throw "Can not launch $marketUri";
+                  }
+                  Navigator.of(context).pop();
+                },
+                child: const Text("확인"),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text("취소"),
+              ),
+            ],
+          );
+        },
+      );
+    }
+
+    /*if (version != marketVersion) {
+    final Uri marketUri = Uri.parse("market://details?id=kr.co.lawired.bok");
+    final Uri fallbackUri = Uri.parse("https://play.google.com/store/apps/details?id=kr.co.lawired.bok");
+
+    if (await canLaunchUrl(marketUri)) {
+      await launchUrl(marketUri);
+    } else if (await canLaunchUrl(fallbackUri)) {
+      await launchUrl(fallbackUri);
+    } else {
+      throw "Can not launch $marketUri";
+    }
+  }*/
   }
 
   @override

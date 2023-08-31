@@ -5,35 +5,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:package_info/package_info.dart';
-import 'package:url_launcher/url_launcher.dart';
-
-void _getAndroidAppVersion() async {
-  PackageInfo packageInfo = await PackageInfo.fromPlatform();
-  String version = packageInfo.version;
-  String buildNumber = packageInfo.buildNumber;
-
-  print("User Device App Version: $version");
-  print("User Devie Build Number: $buildNumber");
-
-  /// Google Play Store Info (Hard Code)
-  const String marketVersion = "2.0.0";
-  const String marketBuildNumber = "50";
-
-  /// Google Play Store Direction
-  if (version != marketVersion || buildNumber != marketBuildNumber) {
-    final Uri marketUri = Uri.parse("market://details?id=kr.co.lawired.bok");
-    final Uri fallbackUri = Uri.parse("https://play.google.com/store/apps/details?id=kr.co.lawired.bok");
-
-    if (await canLaunchUrl(marketUri)) {
-      await launchUrl(marketUri);
-    } else if (await canLaunchUrl(fallbackUri)) {
-      await launchUrl(fallbackUri);
-    } else {
-      throw "Can not launch $marketUri";
-    }
-  }
-}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -55,7 +26,6 @@ void main() async {
   );
 
   runApp(const BokdaeriApp());
-  _getAndroidAppVersion();
 }
 
 class BokdaeriApp extends StatelessWidget {
