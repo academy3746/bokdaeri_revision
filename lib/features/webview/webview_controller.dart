@@ -7,6 +7,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_webview_pro/webview_flutter.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -30,10 +31,14 @@ class _WebviewControllerState extends State<WebviewController> {
   /// URL 초기화
   final String url = "https://bokdaeri.com/";
 
+  /// Push Controller 초기화
   final MsgController _msgController = Get.put(MsgController());
 
   /// 인덱스 페이지 초기화
   bool isInMainPage = true;
+
+  /// Kakao URL 초기화
+  static const platform = MethodChannel('intent');
 
   /// 웹뷰 컨트롤러 초기화
   final Completer<WebViewController> _controller =
@@ -178,7 +183,7 @@ class _WebviewControllerState extends State<WebviewController> {
     print("User Device App Version: $version");
 
     /// Google Play Store Info (Hard Code)
-    const String marketVersion = "2.0.0";
+    const String marketVersion = "2.1.0";
 
     /// Google Play Store Direction
     if (version != marketVersion) {
@@ -260,6 +265,14 @@ class _WebviewControllerState extends State<WebviewController> {
                   },
                   onPageStarted: (String url) async {
                     print("Current Page: $url");
+
+                    /// 카카오톡 공유 in IOS
+                    if (url.contains("kakaolink://send")) {
+                      if (Platform.isIOS) {
+                        print("On Sahre: ${Uri.parse(url).scheme}");
+                        await launchUrl(Uri.parse(url));
+                      }
+                    }
                   },
                   onPageFinished: (String url) async {
 
@@ -296,8 +309,25 @@ class _WebviewControllerState extends State<WebviewController> {
                     }
                   },
                   navigationDelegate: (NavigationRequest request) async {
+                    /// PDF 다운로드
                     if (request.url.contains('/sub/warrant_pdf.php')) {
                       await downloadFile(request.url);
+                      return NavigationDecision.prevent;
+                    }
+
+                    /// 카카오톡 공유 in Android
+                    var kakao = Uri.parse(request.url);
+
+                    if (kakao.scheme == "intent") {
+                      try {
+                        var result = await platform.invokeMethod(
+                            'launchKakaoTalk', {'url': kakao.toString()});
+                        if (result != null) {
+                          await _viewController?.loadUrl(result);
+                        }
+                      } catch (e) {
+                        print("Failed to load Kakao URL $e");
+                      }
                       return NavigationDecision.prevent;
                     }
 
